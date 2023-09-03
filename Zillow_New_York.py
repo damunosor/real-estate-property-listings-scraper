@@ -1,3 +1,9 @@
+"""
+Created on Sun Sep  3 14:00:41 2023
+
+@author: Daniela
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -5,7 +11,6 @@ import pandas as pd
 l=list()
 obj={}
 
-# Web scraping
 target_url = 'https://www.zillow.com/new-york-ny/'
 
 headers =   {
@@ -16,7 +21,9 @@ headers =   {
     'upgrade-insecure-requests':'1',
     }
 
-for page in range(1,520):
+#Web Scraping
+
+for page in range(1,2600):
     resp = requests.get(target_url, headers=headers).text
 
     soup = BeautifulSoup(resp,'html.parser')
@@ -30,7 +37,6 @@ for page in range(1,520):
                 obj['price']=None
             try:
                 obj['size']=properties[x].find('div',{'class':'StyledPropertyCardDataArea-c11n-8-84-3__sc-yipmu-0 dbDWjx'}).text
-              
             except:
                 obj['size']=None
             try:
@@ -45,13 +51,13 @@ for page in range(1,520):
                 obj['listing']=properties[x].find('div',{'class':'StyledPropertyCardDataArea-c11n-8-84-3__sc-yipmu-0 jretvB'}).text
             except:
                 obj['listing']=None
-                    
+                
             l.append(obj)
             obj={}
-                   
 print(l)
 
 #Data Wrangling 
+
 df = pd.DataFrame(l)
 df[['size', 'property_type']] = df['size'].str.split(' - ', 1, expand=True)
 df[['address', 'city','code']] = df['address'].str.split(',', 2, expand=True)
@@ -64,6 +70,5 @@ df[['listing', 'agency']] = df['listing'].str.split(': ', 1, expand=True)
 df = df.drop('size', axis=1)
 df = df.drop('listing', axis=1)
 df= df[['property_type','price','address', 'city','code','area','bedrooms', 'bathrooms','url','agency']]
-
-#Save dataframe
 df.to_csv('Zillow_New_York_OK.csv', index = True)
+
