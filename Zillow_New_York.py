@@ -16,7 +16,7 @@ headers =   {
     'upgrade-insecure-requests':'1',
     }
 
-for page in range(1,1000):
+for page in range(1,520):
     resp = requests.get(target_url, headers=headers).text
 
     soup = BeautifulSoup(resp,'html.parser')
